@@ -1,0 +1,39 @@
+compilar
+javac -d mods/domain --module-path mods domain/src/module-info.java $(find domain -name "*.java")
+javac -d mods/http --module-path mods http/src/module-info.java $(find http -name "*.java")
+javac -d mods/nf --module-path mods nf/src/module-info.java $(find nf -name "*.java")
+javac -d mods/log --module-path mods log/src/module-info.java $(find log -name "*.java")
+javac -d mods/track --module-path mods track/src/module-info.java $(find track -name "*.java")
+javac -d mods/core --module-path mods core/src/module-info.java $(find core -name "*.java")
+
+rodar
+java --module-path mods -m core/br.com.casadocodigo.Main
+
+criar um executavel com apenas os modulos necessarios
+jlink --module-path /usr/lib/jvm/java-9-oracle/jmods --add-modules java.base,jdk.incubator.httpclient --output small-JRE
+
+criar um executavel com apenas os modulos necessarios a partir dos arquivos do projeto
+compilar antes de executar o comando a seguir
+jlink --module-path /usr/lib/jvm/java-9-oracle/jmods:mods --add-modules core --output JRE-bookstore
+
+apos executar o comando acima pode ser executado o comando abaixo
+JRE-bookstore/bin/java -m core/br.com.casadocodigo.Main
+
+listar dependencias do projeto
+jdeps --list-deps mods //lista as dependencias explicitas
+jdeps --list-deps modulo //lista as dependencias do modulo
+
+para criar jar dos modulos
+jar --create --file=local onde o jar vai ser criado --module-version version -C local onde o modulo se encontra
+
+jar --create --file=jars/domain-1.0.jar --module-version 1.0 -C mods/domain/ .
+jar --create --file=jars/nf-1.0.jar --module-version 1.0 -C mods/nf/ .
+jar --create --file=jars/http-1.0.jar --module-version 1.0 -C mods/http/ .
+
+para o modulo principal
+jar --create --file=jars/core-1.0.jar --module-version 1.0 --main-class=br.com.casadocodigo.Main -C mods/core/ .
+
+para executar o projeto em jar
+java -p <pasta-com-os-jars> -m <nome-do-modulo>
+
+java -p jars -m core
